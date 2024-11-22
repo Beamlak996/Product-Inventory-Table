@@ -2,8 +2,10 @@ import { useState } from "react";
 import {
   ColumnDef,
   flexRender,
+  SortingState,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
@@ -43,16 +45,20 @@ export function ProductTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 8,
   });
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
     state: {
       pagination,
+      sorting,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -128,7 +134,7 @@ export function ProductTable<TData, TValue>({
           pagination={pagination}
           setPagination={setPagination}
         />
-        
+
         <div className="flex gap-6 items-center">
           <span className="text-sm text-gray-500">
             Page {pagination.pageIndex + 1} of {table.getPageCount()}

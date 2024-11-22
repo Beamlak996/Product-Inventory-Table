@@ -1,8 +1,18 @@
 import { ReactNode } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Column } from "@tanstack/react-table";
 import { IconType } from "react-icons";
 import { FaCheck, FaInbox } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
+import { ArrowUpDown } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { ProductDropDown } from "./product-drop-down";
 
 export type Product = {
@@ -27,10 +37,51 @@ export type Product = {
   icon: IconType;
 };
 
+type SortableHeaderProps = {
+  column: Column<Product, unknown>; // Specify the type of data
+  label: string;
+};
+
+const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
+  const isSorted = column.getIsSorted();
+  const SortingIcon =
+    isSorted === "asc"
+      ? IoMdArrowUp
+      : isSorted === "desc"
+      ? IoMdArrowDown
+      : ArrowUpDown;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="" asChild>
+        <div
+          className={`flex items-start py-[14px] select-none cursor-pointer  p-2 gap-1 ${
+            isSorted && "text-primary"
+          }`}
+          aria-label={`Sort by ${label}`}
+        >
+          {label}
+          <SortingIcon className=" h-4 w-4" />
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" side="bottom">
+        <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+          <IoMdArrowUp className="mr-2 h-4 w-4" />
+          Asc
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+          <IoMdArrowDown className="mr-2 h-4 w-4" />
+          Desc
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => <SortableHeader column={column} label="Name" />,
     cell: ({ row }) => {
       const Icon = row.original.icon;
       const name = row.original.name;
@@ -47,20 +98,20 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "sku",
-    header: "Sku",
+    header: ({ column }) => <SortableHeader column={column} label="SKU" />,
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: ({ column }) => <SortableHeader column={column} label="Price" />,
     cell: ({ getValue }) => `$${getValue<number>().toFixed(2)}`,
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: ({ column }) => <SortableHeader column={column} label="Category" />,
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => <SortableHeader column={column} label="Status" />,
     cell: ({ row }) => {
       const status = row.original.status;
       let colorClass;
@@ -95,11 +146,13 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "quantityInStock",
-    header: "Quantity In Stock",
+    header: ({ column }) => (
+      <SortableHeader column={column} label="Quantity In Stock" />
+    ),
   },
   {
     accessorKey: "supplier",
-    header: "Supplier",
+    header: ({ column }) => <SortableHeader column={column} label="supplier" />,
   },
   {
     id: "actions",
