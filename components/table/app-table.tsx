@@ -2,6 +2,8 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 import { ProductTable } from "../product/product-table";
+import { products } from "../product/product-data";
+import { columns } from "../product/columns";
 
 export const AppTable = () => {
   return (
@@ -17,7 +19,7 @@ export const AppTable = () => {
       </CardHeader>
 
       <CardContent>
-        <ProductTable />
+        <ProductTable data={products} columns={columns}  />
       </CardContent>
     </Card>
   );
