@@ -1,7 +1,8 @@
-import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 
 import { FilterArea } from "./filter-area"
+import { StatusDropDown } from "../dropdown/status-drop-down"
+import { CategoryDropDown } from "../dropdown/category-drop-down"
 
 export const ProductTable = () => {
     return (
@@ -10,8 +11,8 @@ export const ProductTable = () => {
                 <div className="flex items-center justify-between" >
                     <Input placeholder="Search by name..." className="max-w-sm h-10" />
                     <div className="flex items-center gap-4" >
-                        <Button variant="secondary" >Status</Button>
-                        <Button variant="secondary" >Category</Button>
+                        <StatusDropDown />
+                        <CategoryDropDown />
                     </div>
                 </div>
                 <FilterArea />
