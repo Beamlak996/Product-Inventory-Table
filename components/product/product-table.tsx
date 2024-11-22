@@ -35,10 +35,14 @@ export function ProductTable<TData, TValue>({
   });
 
   return (
-    <div>
-      <div className="flex flex-col gap-3 mb-8 mt-6">
-        <div className="flex items-center justify-between">
-          <Input placeholder="Search by name..." className="max-w-sm h-10" />
+    <div className="space-y-6">
+      {/* Search and Filters */}
+      <div className="flex flex-col gap-4 mb-8 mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <Input
+            placeholder="Search by name..."
+            className="max-w-sm h-10 border-gray-300 focus:ring-2 focus:ring-blue-500"
+          />
           <div className="flex items-center gap-4">
             <StatusDropDown />
             <CategoryDropDown />
@@ -47,23 +51,22 @@ export function ProductTable<TData, TValue>({
         <FilterArea />
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+      {/* Table */}
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="w-full">
+          <TableHeader className="sticky top-0 bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="p-4 text-left">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -72,10 +75,11 @@ export function ProductTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  className="hover:bg-gray-100"
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="p-4">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -88,9 +92,9 @@ export function ProductTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-gray-500"
                 >
-                  No results.
+                  No results found. Try adjusting your filters.
                 </TableCell>
               </TableRow>
             )}

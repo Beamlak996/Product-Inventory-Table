@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IconType } from "react-icons";
 import { FaCheck, FaInbox } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { ProductDropDown } from "./product-drop-down";
 
 export type Product = {
   id: string;
@@ -99,5 +100,9 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "supplier",
     header: "Supplier",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => <ProductDropDown row={row} />,
   },
 ];
