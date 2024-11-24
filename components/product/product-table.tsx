@@ -65,19 +65,31 @@ export function ProductTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     setColumnFilters((prev) => {
-      const filtersWithoutStatus = prev.filter(
-        (filter) => filter.id !== "status"
+      const baseFilters = prev.filter(
+        (filter) => filter.id !== "status" && filter.id !== "category"
       );
 
-      const newFilter =
-        selectedStatus.length > 0
-          ? [...filtersWithoutStatus, { id: "status", value: selectedStatus }]
-          : filtersWithoutStatus;
+      const newFilters = [...baseFilters];
 
-      return newFilter;
+      if (selectedStatus.length > 0) {
+        newFilters.push({
+          id: "status",
+          value: selectedStatus,
+        });
+      }
+
+      if (selectedCategories.length > 0) {
+        newFilters.push({
+          id: "category",
+          value: selectedCategories,
+        });
+      }
+
+      return newFilters;
     });
   }, [selectedStatus]);
 
@@ -119,10 +131,18 @@ export function ProductTable<TData, TValue>({
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
             />
-            <CategoryDropDown />
+            <CategoryDropDown
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+            />
           </div>
         </div>
-        <FilterArea />
+        <FilterArea
+          selectedStatuses={selectedStatus}
+          setSelectedStatuses={setSelectedStatus}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
       </div>
 
       {/* Table */}
