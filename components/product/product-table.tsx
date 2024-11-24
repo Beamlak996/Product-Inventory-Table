@@ -1,9 +1,11 @@
 import { useState } from "react";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   SortingState,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -46,6 +48,9 @@ export function ProductTable<TData, TValue>({
     pageSize: 8,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -53,12 +58,15 @@ export function ProductTable<TData, TValue>({
     state: {
       pagination,
       sorting,
+      columnFilters,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
@@ -68,7 +76,11 @@ export function ProductTable<TData, TValue>({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Input
             placeholder="Search by name..."
-            className="max-w-sm h-10 border-gray-300 focus:ring-2 focus:ring-blue-500"
+            className="max-w-sm h-10"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
           />
           <div className="flex items-center gap-4">
             <StatusDropDown />
