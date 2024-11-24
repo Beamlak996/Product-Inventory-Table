@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, Dispatch, SetStateAction } from "react";
 import { FaCheck, FaInbox } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { LuGitPullRequestDraft } from "react-icons/lu";
@@ -42,7 +42,15 @@ const statuses: Status[] = [
   },
 ];
 
-export const StatusDropDown = () => {
+type StatusDropDownProps = {
+  selectedStatus: string[];
+  setSelectedStatus: Dispatch<SetStateAction<string[]>>;
+};
+
+export const StatusDropDown = ({
+  selectedStatus,
+  setSelectedStatus,
+}: StatusDropDownProps) => {
   const [open, setOpen] = useState(false);
 
   function returnColor(status: string) {
@@ -56,6 +64,20 @@ export const StatusDropDown = () => {
       default:
         break;
     }
+  }
+
+  function handleCheckboxChange(value: string) {
+    setSelectedStatus((prev) => {
+      const updatedStatuses = prev.includes(value)
+        ? prev.filter((status) => status !== value)
+        : [...prev, value];
+
+      return updatedStatuses;
+    });
+  }
+
+  function clearFilters() {
+    setSelectedStatus([]);
   }
 
   return (
@@ -76,8 +98,12 @@ export const StatusDropDown = () => {
                     className="h-10 mb-2"
                     key={status.value}
                     value={status.value}
+                    onClick={() => handleCheckboxChange(status.value)}
                   >
-                    <Checkbox className="size-4 rounded-[4px]" />
+                    <Checkbox
+                      className="size-4 rounded-[4px]"
+                      onClick={() => handleCheckboxChange(status.value)}
+                    />
                     <div
                       className={`flex items-center gap-1 ${returnColor(
                         status.value
@@ -92,7 +118,11 @@ export const StatusDropDown = () => {
             </CommandList>
             <div className="flex flex-col gap-2 text-[23px]">
               <Separator />
-              <Button variant="ghost" className="text-[12px] mb-1">
+              <Button
+                variant="ghost"
+                className="text-[12px] mb-1"
+                onClick={clearFilters}
+              >
                 Clear Filters
               </Button>
             </div>

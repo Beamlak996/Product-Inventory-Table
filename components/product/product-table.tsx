@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -9,6 +9,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  FilterFn,
 } from "@tanstack/react-table";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
@@ -39,6 +40,19 @@ export interface PaginationType {
   pageSize: number;
 }
 
+const multiSelectFilter: FilterFn<unknown> = (
+  row,
+  columnId,
+  filterValue: string[]
+) => {
+  const rowValue = (row.getValue(columnId) as string).toLowerCase();
+  const lowerCaseFilterValues = filterValue.map((val) =>
+    val.toLocaleLowerCase()
+  );
+
+  return filterValue.length === 0 || lowerCaseFilterValues.includes(rowValue);
+};
+
 export function ProductTable<TData, TValue>({
   columns,
   data,
@@ -48,9 +62,24 @@ export function ProductTable<TData, TValue>({
     pageSize: 8,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+
+  useEffect(() => {
+    setColumnFilters((prev) => {
+      const filtersWithoutStatus = prev.filter(
+        (filter) => filter.id !== "status"
+      );
+
+      const newFilter =
+        selectedStatus.length > 0
+          ? [...filtersWithoutStatus, { id: "status", value: selectedStatus }]
+          : filtersWithoutStatus;
+
+      return newFilter;
+    });
+  }, [selectedStatus]);
 
   const table = useReactTable({
     data,
@@ -59,6 +88,9 @@ export function ProductTable<TData, TValue>({
       pagination,
       sorting,
       columnFilters,
+    },
+    filterFns: {
+      multiSelect: multiSelectFilter,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
@@ -83,7 +115,10 @@ export function ProductTable<TData, TValue>({
             }
           />
           <div className="flex items-center gap-4">
-            <StatusDropDown />
+            <StatusDropDown
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+            />
             <CategoryDropDown />
           </div>
         </div>
